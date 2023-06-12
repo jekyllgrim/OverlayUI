@@ -18,6 +18,18 @@ class JGP_OverlayUI : EventHandler
 	ui PlayerInfo CPlayer;
 	ui PlayerPawn CPlayerPawn;
 
+	static clearscope double LinearMap(double val, double source_min, double source_max, double out_min, double out_max, bool clampIt = false) 
+	{
+		double d = (val - source_min) * (out_max - out_min) / (source_max - source_min) + out_min;
+		if (clampit) 
+		{
+			double truemax = out_max > out_min ? out_max : out_min;
+			double truemin = out_max > out_min ? out_min : out_max;
+			d = Clamp(d, truemin, truemax);
+		}
+		return d;
+	}
+
 	ui PlayerInfo, PlayerPawn GetConsolePlayer()
 	{
 		if (!PlayerInGame[consoleplayer])
@@ -206,7 +218,7 @@ class JGP_OverlayUI : EventHandler
 				{
 					Sector sec = ppawn.cursector;
 					int lightlv = sec.GetLightLevel();
-					int shadowAlpha = JGP_Utils.LinearMap(lightlv, 0, 256, 256, 0);
+					int shadowAlpha = LinearMap(lightlv, 0, 256, 256, 0);
 					Screen.DrawTexture(texID, false, drawPos.x, drawPos.y,
 						DTA_VirtualWidthF, baseVres.x,
 						DTA_VirtualHeightF, baseVres.y,
